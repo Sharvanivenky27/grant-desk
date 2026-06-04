@@ -44,7 +44,7 @@ export function useSavedGrants(stageFilter?: PipelineStage) {
       const res = await fetch(`/api/saved?${params}`);
       if (!res.ok) throw new Error('Failed to fetch saved grants');
       const json: SavedGrantsResponse = await res.json();
-      setSavedGrants(json.data);
+      setSavedGrants(json.data ?? []);
       setMeta(json.meta);
     } catch (err) {
       setError(err instanceof Error ? err.message : 'Unknown error');

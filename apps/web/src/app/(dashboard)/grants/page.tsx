@@ -89,7 +89,7 @@ function GrantCard({ grant, onSelect, onSave, isSaved, userSector }: GrantCardPr
               >
                 {grant.level}
               </Badge>
-              {userSector && grant.eligibleSectors.includes(userSector) && (
+              {userSector && (grant.eligibleSectors ?? []).includes(userSector) && (
                 <Badge variant="outline" className="text-xs font-medium bg-emerald-50 text-emerald-700 border-emerald-200">
                   Matches your profile
                 </Badge>
@@ -160,11 +160,11 @@ function GrantCard({ grant, onSelect, onSave, isSaved, userSector }: GrantCardPr
           <div className="flex items-center gap-1.5 text-sm text-muted-foreground">
             <MapPin className="h-4 w-4" />
             <span>
-              {grant.eligibleProvinces.length === 13
+              {(grant.eligibleProvinces ?? []).length === 13
                 ? 'All Canada'
-                : grant.eligibleProvinces.length > 3
-                  ? `${grant.eligibleProvinces.slice(0, 2).join(', ')} +${grant.eligibleProvinces.length - 2}`
-                  : grant.eligibleProvinces.join(', ')}
+                : (grant.eligibleProvinces ?? []).length > 3
+                  ? `${(grant.eligibleProvinces ?? []).slice(0, 2).join(', ')} +${(grant.eligibleProvinces ?? []).length - 2}`
+                  : (grant.eligibleProvinces ?? []).join(', ')}
             </span>
           </div>
         </div>
@@ -173,7 +173,7 @@ function GrantCard({ grant, onSelect, onSave, isSaved, userSector }: GrantCardPr
         <div className="flex items-center justify-between mt-4 pt-4 border-t border-border">
           {/* Sector tags */}
           <div className="flex items-center gap-1.5 flex-wrap">
-            {grant.eligibleSectors.slice(0, 3).map((sector) => (
+            {(grant.eligibleSectors ?? []).slice(0, 3).map((sector) => (
               <span
                 key={sector}
                 className="inline-flex items-center rounded-md bg-muted/60 px-2 py-0.5 text-xs text-muted-foreground font-medium"
@@ -181,9 +181,9 @@ function GrantCard({ grant, onSelect, onSave, isSaved, userSector }: GrantCardPr
                 {sector}
               </span>
             ))}
-            {grant.eligibleSectors.length > 3 && (
+            {(grant.eligibleSectors ?? []).length > 3 && (
               <span className="text-xs text-muted-foreground">
-                +{grant.eligibleSectors.length - 3}
+                +{(grant.eligibleSectors ?? []).length - 3}
               </span>
             )}
           </div>
@@ -293,7 +293,7 @@ function DetailDrawer({ grant, open, onClose, onSave, isSaved }: DetailDrawerPro
               <div>
                 <p className="text-xs text-muted-foreground font-medium mb-2">Sectors</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {grant.eligibleSectors.map((sector) => (
+                  {(grant.eligibleSectors ?? []).map((sector) => (
                     <span
                       key={sector}
                       className="inline-flex items-center rounded-md bg-muted/70 px-2.5 py-1 text-xs text-muted-foreground font-medium"
@@ -307,7 +307,7 @@ function DetailDrawer({ grant, open, onClose, onSave, isSaved }: DetailDrawerPro
               <div>
                 <p className="text-xs text-muted-foreground font-medium mb-2">Stages</p>
                 <div className="flex flex-wrap gap-1.5">
-                  {grant.eligibleStages.map((stage) => (
+                  {(grant.eligibleStages ?? []).map((stage) => (
                     <Badge
                       key={stage}
                       variant="outline"
@@ -322,9 +322,9 @@ function DetailDrawer({ grant, open, onClose, onSave, isSaved }: DetailDrawerPro
               <div>
                 <p className="text-xs text-muted-foreground font-medium mb-2">Provinces</p>
                 <p className="text-sm text-foreground">
-                  {grant.eligibleProvinces.length === 13
+                  {(grant.eligibleProvinces ?? []).length === 13
                     ? 'All Canadian provinces and territories'
-                    : grant.eligibleProvinces.join(', ')}
+                    : (grant.eligibleProvinces ?? []).join(', ')}
                 </p>
               </div>
             </div>
@@ -334,7 +334,7 @@ function DetailDrawer({ grant, open, onClose, onSave, isSaved }: DetailDrawerPro
           <div className="mb-6">
             <h3 className="text-sm font-semibold text-foreground mb-3">Required Documents</h3>
             <ul className="space-y-2">
-              {grant.requiredDocs.map((doc) => (
+              {(grant.requiredDocs ?? []).map((doc) => (
                 <li key={doc} className="flex items-start gap-2.5 text-sm text-muted-foreground">
                   <div className="mt-1.5 h-1.5 w-1.5 rounded-full bg-primary/60 flex-shrink-0" />
                   {doc}
@@ -433,11 +433,11 @@ function GrantsPageContent() {
   }, [searchQuery, selectedSectors, selectedProvinces, selectedLevels, router]);
 
   const savedGrantIds = useMemo(() => {
-    return new Set(savedGrants.map(sg => sg.grantId));
+    return new Set((savedGrants ?? []).map(sg => sg.grantId));
   }, [savedGrants]);
 
   const filteredGrants = useMemo(() => {
-    return grants.filter((grant) => {
+    return (grants ?? []).filter((grant) => {
       if (searchQuery) {
         const query = searchQuery.toLowerCase();
         const matchesSearch =
@@ -447,13 +447,13 @@ function GrantsPageContent() {
         if (!matchesSearch) return false;
       }
       if (selectedSectors.length > 0) {
-        const hasMatchingSector = grant.eligibleSectors.some((s) =>
+        const hasMatchingSector = (grant.eligibleSectors ?? []).some((s) =>
           selectedSectors.includes(s)
         );
         if (!hasMatchingSector) return false;
       }
       if (selectedProvinces.length > 0) {
-        const hasMatchingProvince = grant.eligibleProvinces.some((p) =>
+        const hasMatchingProvince = (grant.eligibleProvinces ?? []).some((p) =>
           selectedProvinces.includes(p)
         );
         if (!hasMatchingProvince) return false;
