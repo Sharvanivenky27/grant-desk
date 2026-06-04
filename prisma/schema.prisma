@@ -1,0 +1,139 @@
+// Prisma schema for GrantDesk
+// Canadian grant discovery and application platform
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+// ============================================================================
+// Organizations & Users
+// ============================================================================
+
+model Organization {
+  id        String   @id @default(uuid())
+  name      String
+  users     User[]
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+}
+
+model User {
+  id             String       @id @default(uuid())
+  email          String       @unique
+  name           String
+  passwordHash   String?
+  organizationId String?
+  organization   Organization? @relation(fields: [organizationId], references: [id])
+  roles          Role[]
+  businessProfiles BusinessProfile[]
+  savedGrants    SavedGrant[]
+  createdAt      DateTime     @default(now())
+  updatedAt      DateTime     @updatedAt
+}
+
+model Role {
+  id          String   @id @default(uuid())
+  name        String   @unique
+  permissions String[]
+  users       User[]
+}
+
+// ============================================================================
+// Business Profile (Eligibility)
+// ============================================================================
+
+model BusinessProfile {
+  id              String   @id @default(uuid())
+  userId          String
+  user            User     @relation(fields: [userId], references: [id])
+  companyName     String
+  province        String   // ON, BC, AB, QC, etc.
+  sector          String   // IT, Agriculture, Healthcare, etc.
+  stage           String   // startup, pre-revenue, revenue, established
+  employees       Int?
+  annualRevenue   String?  // "<$100K", "$100K-$500K", "$500K-$1M", "$1M+"
+  legalStructure  String?  // sole_prop, corporation, partnership, cooperative
+  fundingPurpose  String?
+  website         String?
+  description     String?
+  createdAt       DateTime @default(now())
+  updatedAt       DateTime @updatedAt
+
+  @@index([userId])
+}
+
+// ============================================================================
+// Grants
+// ============================================================================
+
+model Grant {
+  id                String       @id @default(uuid())
+  sourceId          String?      // External grant ID from government source
+  title            String
+  description      String
+  agency           String       // Agency name (e.g., "ISED", "NRCan")
+  level            String       // federal, provincial, municipal, private
+  grantType        String       // grant, loan, contribution, tax_credit
+  minAmount        Int?
+  maxAmount        Int?
+  avgAmount        Int?
+  deadline         DateTime?
+  deadlineType     String       // fixed, rolling, ongoing
+  eligibleSectors  String[]     // Sector names or NAICS codes
+  eligibleStages   String[]     // startup, pre-revenue, revenue, established
+  eligibleProvinces String[]     // ON, BC, AB, QC, etc.
+  requiredDocs     String[]
+  applicationUrl   String
+  isActive         Boolean      @default(true)
+  savedBy          SavedGrant[]
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
+
+  @@index([isActive, level])
+  @@index([deadline])
+  @@index([eligibleProvinces])
+}
+
+// ============================================================================
+// Saved Grants (User's Grant Pipeline)
+// ============================================================================
+
+model SavedGrant {
+  id          String    @id @default(uuid())
+  userId      String
+  user        User      @relation(fields: [userId], references: [id])
+  grantId     String
+  grant       Grant     @relation(fields: [grantId], references: [id])
+  stage       String    @default("saved") // saved, applied, submitted, awarded, rejected, withdrawn
+  notes       String?
+  savedAt     DateTime  @default(now())
+  appliedAt   DateTime?
+  submittedAt DateTime?
+  outcomeAt   DateTime?
+
+  @@unique([userId, grantId])
+  @@index([userId, stage])
+}
+
+// ============================================================================
+// Audit Log
+// ============================================================================
+
+model AuditLogEntry {
+  id           String   @id @default(uuid())
+  userId       String
+  action       String
+  resourceType String
+  resourceId   String
+  metadata     Json?
+  ipAddress    String
+  timestamp    DateTime @default(now())
+
+  @@index([userId, timestamp])
+  @@index([resourceType, resourceId])
+}
