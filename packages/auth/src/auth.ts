@@ -1,7 +1,5 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
-import GoogleProvider from 'next-auth/providers/google';
-import bcrypt from 'bcryptjs';
 
 // Demo mode: use in-memory auth when no database is available
 const DEMO_MODE = !process.env.DATABASE_URL;
@@ -16,8 +14,8 @@ const DEMO_USERS = [
   },
 ];
 
-export const authOptions: NextAuthOptions = {
-  providers: [
+const buildProviders = () => {
+  const providers: NextAuthOptions['providers'] = [
     CredentialsProvider({
       name: 'credentials',
       credentials: {
@@ -76,11 +74,23 @@ export const authOptions: NextAuthOptions = {
         }
       },
     }),
-    GoogleProvider({
-      clientId: process.env.GOOGLE_CLIENT_ID ?? '',
-      clientSecret: process.env.GOOGLE_CLIENT_SECRET ?? '',
-    }),
-  ],
+  ];
+
+  if (process.env.GOOGLE_CLIENT_ID && process.env.GOOGLE_CLIENT_SECRET) {
+    const GoogleProvider = require('next-auth/providers/google').default;
+    providers.push(
+      GoogleProvider({
+        clientId: process.env.GOOGLE_CLIENT_ID,
+        clientSecret: process.env.GOOGLE_CLIENT_SECRET,
+      })
+    );
+  }
+
+  return providers;
+};
+
+export const authOptions: NextAuthOptions = {
+  providers: buildProviders(),
 
   session: {
     strategy: 'jwt',
