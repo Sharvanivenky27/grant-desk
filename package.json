@@ -5,6 +5,7 @@
   "description": "Canadian grant discovery and application platform",
   "packageManager": "pnpm@9.0.0",
   "scripts": {
+    "postinstall": "prisma generate",
     "dev": "turbo dev --filter=@grantdesk/web",
     "build": "turbo build",
     "test": "vitest run",
