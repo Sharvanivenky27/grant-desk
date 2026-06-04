@@ -1,14 +1,13 @@
 import NextAuth, { NextAuthOptions } from 'next-auth';
 import CredentialsProvider from 'next-auth/providers/credentials';
 
-// Demo mode: use in-memory auth when no database is available
 const DEMO_MODE = !process.env.DATABASE_URL;
 
 const DEMO_USERS = [
   {
     id: 'demo-1',
     email: 'demo@grantdesk.ca',
-    password: 'demo123',
+    password: 'Password123!',
     name: 'Demo User',
     roles: ['applicant'],
   },
@@ -27,21 +26,23 @@ const buildProviders = () => {
           return null;
         }
 
-        // Demo mode: use in-memory authentication
-        if (DEMO_MODE) {
-          const user = DEMO_USERS.find(
-            (u) =>
-              u.email === credentials.email &&
-              u.password === credentials.password
-          );
-          if (!user) return null;
+        // Demo credentials always work regardless of DB state
+        const demoUser = DEMO_USERS.find(
+          (u) =>
+            u.email === credentials.email &&
+            u.password === credentials.password
+        );
+        if (demoUser) {
           return {
-            id: user.id,
-            email: user.email,
-            name: user.name,
-            roles: user.roles,
+            id: demoUser.id,
+            email: demoUser.email,
+            name: demoUser.name,
+            roles: demoUser.roles,
           };
         }
+
+        // Without a database, only demo credentials are accepted
+        if (DEMO_MODE) return null;
 
         // Real mode: use database
         try {

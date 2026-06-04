@@ -67,8 +67,19 @@ export default function RegisterPage() {
 
       const data = await res.json();
 
-      if (data.demoMode) {
-        router.push('/onboarding');
+      if (data.data?.demoMode) {
+        // Demo environment: sign in with demo credentials and proceed
+        const signInResult = await signIn('credentials', {
+          email: 'demo@grantdesk.ca',
+          password: 'Password123!',
+          redirect: false,
+        });
+        if (signInResult?.error) {
+          router.push('/login');
+        } else {
+          router.push('/onboarding');
+          router.refresh();
+        }
         return;
       }
 
