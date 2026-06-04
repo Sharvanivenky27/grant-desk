@@ -208,7 +208,7 @@ export default function LoginPage() {
 
           {/* Sign up link */}
           <p className="mt-8 text-center text-sm text-muted-foreground">
-            Don't have an account?{' '}
+            Don&apos;t have an account?{' '}
             <Link
               href="/register"
               className="font-semibold text-primary hover:text-primary/90 transition-colors"
@@ -257,7 +257,7 @@ export default function LoginPage() {
             {/* Testimonial */}
             <div className="mt-8 rounded-xl bg-white/10 backdrop-blur-sm p-5 border border-white/10">
               <p className="text-sm text-white/90 italic">
-                "GrantDesk helped us find $250,000 in funding we never would have discovered on our own."
+                &quot;GrantDesk helped us find $250,000 in funding we never would have discovered on our own.&quot;
               </p>
               <div className="mt-3 flex items-center gap-3">
                 <div className="h-8 w-8 rounded-full bg-white/20" />

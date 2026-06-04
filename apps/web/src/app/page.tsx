@@ -353,7 +353,7 @@ export default function HomePage() {
                 <span className="text-lg font-semibold tracking-tight">GrantDesk</span>
               </Link>
               <p className="mt-4 text-sm text-muted-foreground leading-relaxed">
-                Canada's leading grant discovery platform. Find government funding for your business growth.
+                Canada&apos;s leading grant discovery platform. Find government funding for your business growth.
               </p>
             </div>
 

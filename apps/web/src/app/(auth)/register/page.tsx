@@ -210,7 +210,7 @@ export default function RegisterPage() {
           <div className="mt-10 lg:mt-0">
             <h1 className="text-2xl font-bold tracking-tight text-foreground">Create your account</h1>
             <p className="mt-2 text-sm text-muted-foreground">
-              Start discovering grants in minutes. It's free.
+              Start discovering grants in minutes. It&apos;s free.
             </p>
           </div>
 
