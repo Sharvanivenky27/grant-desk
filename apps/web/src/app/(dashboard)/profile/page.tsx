@@ -65,6 +65,9 @@ export default function ProfilePage() {
   const { profile, loading, error, saving, updateProfile, refetch } = useProfile();
   const [saved, setSaved] = useState(false);
   const [formError, setFormError] = useState<string | null>(null);
+  // Track whether any save has been attempted so we don't replace the form
+  // with a full-page error block when a save fails (profile would still be null).
+  const [saveAttempted, setSaveAttempted] = useState(false);
   const [formData, setFormData] = useState<UpsertProfileData>({
     companyName: '',
     province: '',
@@ -103,6 +106,7 @@ export default function ProfilePage() {
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
     setFormError(null);
+    setSaveAttempted(true);
     try {
       await updateProfile(formData);
       setSaved(true);
@@ -128,7 +132,7 @@ export default function ProfilePage() {
     );
   }
 
-  if (error && !profile) {
+  if (error && !profile && !saveAttempted) {
     return (
       <div className="p-6 lg:p-8 max-w-2xl">
         <Card className="border-destructive/50 bg-destructive/5">

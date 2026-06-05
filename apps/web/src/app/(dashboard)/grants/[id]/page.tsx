@@ -2,13 +2,14 @@
 
 import { useState } from 'react';
 import Link from 'next/link';
-import { Link2, Check, ChevronRight } from 'lucide-react';
+import { Link2, Check, ChevronRight, FileQuestion } from 'lucide-react';
 import { useGrant } from '@/lib/hooks/useGrant';
 import { useGrants } from '@/lib/hooks/useGrants';
 import { useSavedGrants } from '@/lib/hooks/useSavedGrants';
 import { GrantDetail } from '@/components/GrantDetail';
 import { Skeleton } from '@/components/ui/Skeleton';
 import { ErrorState } from '@/components/ui/ErrorState';
+import { Button } from '@/components/ui/button';
 
 function CopyLinkButton() {
   const [copied, setCopied] = useState(false);
@@ -162,7 +163,20 @@ export default function GrantDetailPage({ params }: GrantDetailPageProps) {
           <ApplicationChecklist docs={grant.requiredDocs} />
           <SimilarGrants currentId={id} sectors={grant.eligibleSectors} />
         </>
-      ) : null}
+      ) : (
+        <div className="flex flex-col items-center justify-center py-20 text-center">
+          <div className="rounded-full bg-muted p-4 mb-4">
+            <FileQuestion className="h-8 w-8 text-muted-foreground" />
+          </div>
+          <h2 className="text-lg font-semibold text-foreground mb-1">Grant not found</h2>
+          <p className="text-sm text-muted-foreground mb-6">
+            This grant doesn&apos;t exist or is no longer available.
+          </p>
+          <Button asChild>
+            <Link href="/grants">Browse all grants</Link>
+          </Button>
+        </div>
+      )}
     </div>
   );
 }
