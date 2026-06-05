@@ -39,10 +39,12 @@ export function useProfile() {
   const [saving, setSaving] = useState(false);
 
   const fetchProfile = useCallback(async () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
     try {
       setLoading(true);
       setError(null);
-      const res = await fetch('/api/profile');
+      const res = await fetch('/api/profile', { signal: controller.signal });
       if (res.status === 404) {
         setProfile(null);
         return;
@@ -51,8 +53,13 @@ export function useProfile() {
       const json = await res.json();
       setProfile(json.data);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      if (err instanceof Error && err.name === 'AbortError') {
+        setError('Request timed out. Please try again.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      }
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
     }
   }, []);

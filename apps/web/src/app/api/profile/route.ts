@@ -10,7 +10,7 @@ function parseCookie(request: NextRequest): Record<string, unknown> | null {
   try {
     const raw = request.cookies.get(DEMO_COOKIE)?.value;
     if (!raw) return null;
-    return JSON.parse(decodeURIComponent(raw));
+    return JSON.parse(raw);
   } catch {
     return null;
   }
@@ -20,11 +20,12 @@ function writeCookie(
   response: NextResponse,
   profile: Record<string, unknown>
 ): NextResponse {
-  response.cookies.set(DEMO_COOKIE, encodeURIComponent(JSON.stringify(profile)), {
+  response.cookies.set(DEMO_COOKIE, JSON.stringify(profile), {
     path: '/',
     maxAge: 60 * 60 * 24 * 7,
     httpOnly: true,
     sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
   });
   return response;
 }

@@ -384,18 +384,18 @@ export default function HomePage() {
               <h4 className="font-semibold text-foreground">Resources</h4>
               <ul className="mt-4 space-y-3">
                 <li>
-                  <Link href="/blog" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Blog
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/guides" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                  <Link href="/resources" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Grant Guides
                   </Link>
                 </li>
                 <li>
-                  <Link href="/faq" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    FAQ
+                  <Link href="/resources" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Deadlines
+                  </Link>
+                </li>
+                <li>
+                  <Link href="/features" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
+                    Features
                   </Link>
                 </li>
               </ul>
@@ -405,16 +405,6 @@ export default function HomePage() {
             <div>
               <h4 className="font-semibold text-foreground">Company</h4>
               <ul className="mt-4 space-y-3">
-                <li>
-                  <Link href="/about" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    About
-                  </Link>
-                </li>
-                <li>
-                  <Link href="/contact" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
-                    Contact
-                  </Link>
-                </li>
                 <li>
                   <Link href="/privacy" className="text-sm text-muted-foreground hover:text-foreground transition-colors">
                     Privacy

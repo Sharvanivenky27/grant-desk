@@ -32,7 +32,7 @@ function parseCookie(request: NextRequest): DemoSavedEntry[] {
   try {
     const raw = request.cookies.get(DEMO_COOKIE)?.value;
     if (!raw) return [];
-    return JSON.parse(decodeURIComponent(raw));
+    return JSON.parse(raw);
   } catch {
     return [];
   }
@@ -45,11 +45,12 @@ function buildResponse(entry: DemoSavedEntry) {
 }
 
 function writeCookie(response: NextResponse, entries: DemoSavedEntry[]): NextResponse {
-  response.cookies.set(DEMO_COOKIE, encodeURIComponent(JSON.stringify(entries)), {
+  response.cookies.set(DEMO_COOKIE, JSON.stringify(entries), {
     path: '/',
     maxAge: 60 * 60 * 24 * 7,
     httpOnly: true,
     sameSite: 'lax',
+    secure: process.env.NODE_ENV === 'production',
   });
   return response;
 }

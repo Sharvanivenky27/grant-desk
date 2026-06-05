@@ -35,20 +35,27 @@ export function useSavedGrants(stageFilter?: PipelineStage) {
   const [meta, setMeta] = useState({ page: 1, pageSize: 20, total: 0, totalPages: 0 });
 
   const fetchSavedGrants = useCallback(async () => {
+    const controller = new AbortController();
+    const timeout = setTimeout(() => controller.abort(), 10000);
     try {
       setLoading(true);
       setError(null);
       const params = new URLSearchParams();
       if (stageFilter) params.set('stage', stageFilter);
 
-      const res = await fetch(`/api/saved?${params}`);
+      const res = await fetch(`/api/saved?${params}`, { signal: controller.signal });
       if (!res.ok) throw new Error('Failed to fetch saved grants');
       const json: SavedGrantsResponse = await res.json();
       setSavedGrants(json.data ?? []);
-      setMeta(json.meta);
+      if (json.meta) setMeta(json.meta);
     } catch (err) {
-      setError(err instanceof Error ? err.message : 'Unknown error');
+      if (err instanceof Error && err.name === 'AbortError') {
+        setError('Request timed out. Please try again.');
+      } else {
+        setError(err instanceof Error ? err.message : 'Unknown error');
+      }
     } finally {
+      clearTimeout(timeout);
       setLoading(false);
     }
   }, [stageFilter]);
