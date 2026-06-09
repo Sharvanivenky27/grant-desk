@@ -269,13 +269,13 @@ async function main() {
 
   console.log('✓ Created demo organization');
 
-  // Create demo user
-  // Password: demo123 (DO NOT use this in production)
-  const demoPasswordHash = await hash('demo123', 10);
+  // Create demo user — password sourced from DEMO_PASSWORD env var
+  const demoPassword = process.env.DEMO_PASSWORD ?? 'Password123!';
+  const demoPasswordHash = await hash(demoPassword, 10);
 
   const demoUser = await prisma.user.create({
     data: {
-      email: 'demo@grantdesk.ca',
+      email: process.env.DEMO_EMAIL ?? 'demo@grantdesk.ca',
       name: 'Demo User',
       passwordHash: demoPasswordHash,
       organizationId: demoOrg.id,
@@ -336,8 +336,8 @@ async function main() {
 
   console.log('✅ Database seeded successfully!');
   console.log('');
-  console.log('Demo user: demo@grantdesk.ca');
-  console.log('Demo password: demo123');
+  console.log(`Demo user: ${process.env.DEMO_EMAIL ?? 'demo@grantdesk.ca'}`);
+  console.log(`Demo password: ${process.env.DEMO_PASSWORD ?? 'Password123!'}`);
 }
 
 main()

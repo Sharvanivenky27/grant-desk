@@ -3,11 +3,14 @@ import CredentialsProvider from 'next-auth/providers/credentials';
 
 const DEMO_MODE = !process.env.DATABASE_URL;
 
+const DEMO_EMAIL = process.env.DEMO_EMAIL ?? 'demo@grantdesk.ca';
+const DEMO_PASSWORD = process.env.DEMO_PASSWORD ?? 'Password123!';
+
 const DEMO_USERS = [
   {
     id: 'demo-1',
-    email: 'demo@grantdesk.ca',
-    password: 'Password123!',
+    email: DEMO_EMAIL,
+    password: DEMO_PASSWORD,
     name: 'Demo User',
     roles: ['applicant'],
   },
@@ -26,23 +29,23 @@ const buildProviders = () => {
           return null;
         }
 
-        // Demo credentials always work regardless of DB state
-        const demoUser = DEMO_USERS.find(
-          (u) =>
-            u.email === credentials.email &&
-            u.password === credentials.password
-        );
-        if (demoUser) {
-          return {
-            id: demoUser.id,
-            email: demoUser.email,
-            name: demoUser.name,
-            roles: demoUser.roles,
-          };
+        // Demo credentials only work in demo mode (no DATABASE_URL)
+        if (DEMO_MODE) {
+          const demoUser = DEMO_USERS.find(
+            (u) =>
+              u.email === credentials.email &&
+              u.password === credentials.password
+          );
+          if (demoUser) {
+            return {
+              id: demoUser.id,
+              email: demoUser.email,
+              name: demoUser.name,
+              roles: demoUser.roles,
+            };
+          }
+          return null;
         }
-
-        // Without a database, only demo credentials are accepted
-        if (DEMO_MODE) return null;
 
         // Real mode: use database
         try {
